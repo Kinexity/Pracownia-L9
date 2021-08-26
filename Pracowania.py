@@ -40,7 +40,7 @@ def main():
 		max_voltage_diff = np.max(voltage_sum) - np.min(voltage_sum)
 		new_time = time_points[:len(voltage_sum)] - (2 * time_points[0] - time_points[1])
 		initial = (max_voltage_diff, np.min(voltage_sum), 2000000.)
-		par,cov = sp.curve_fit(fit_exp_function, new_time, voltage_sum, p0 = initial)
+		par,cov = sp.curve_fit(fit_exp_function, new_time, voltage_sum, p0 = initial) #fit
 		inv_decay_t = par[2]
 		rounding = -int(math.floor(np.log10(inv_decay_t)) - 3)
 		if file=="nitrogen.csv":
@@ -51,6 +51,7 @@ def main():
 			ppb = 1e15 * con.k * N * 298.15 / float(con.physical_constants["standard atmosphere"][0])
 			print(file[:-4],"\t","{:.3e}".format(np.round(inv_decay_t, rounding)),"\t","{:.3e}".format(N),"\t", "{:.3e}".format(ppb))
 		px = 1 / pt.rcParams['figure.dpi']
+		#plots
 		pt.subplots(figsize=(1200 * px, 800 * px))
 		pt.xlabel("Czas od impulsu [s]")
 		pt.ylabel("Suma napięć [V]")
@@ -59,14 +60,5 @@ def main():
 		pt.plot(new_time, fit_exp_function(new_time, *par), "-g", label="Dopasowana krzywa zaniku")
 		pt.legend()
 		pt.savefig(file[:-4] + ".png", bbox_inches='tight')
-		pt.subplots(figsize=(1200 * px, 800 * px))
-		pt.xscale("log")
-		pt.xlabel("Czas od impulsu [s]")
-		pt.ylabel("Suma napięć [V]")
-		pt.title(file[:-4])
-		pt.plot(new_time,voltage_sum, ".r", label="Suma impulsów")
-		pt.plot(new_time, fit_exp_function(new_time, *par), "-g", label="Dopasowana krzywa zaniku")
-		pt.legend()
-		pt.savefig(file[:-4] + "_log.png", bbox_inches='tight')
 
 main()
